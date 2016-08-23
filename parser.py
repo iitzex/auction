@@ -1,10 +1,15 @@
 import requests
+import re
 from bs4 import BeautifulSoup
 
 
 def find_table(addr):
     r = requests.get(addr)
     soup = BeautifulSoup(r.text, "html.parser")
+
+    if soup.pre.pre is None:
+        print("No Exist")
+        return False
 
     context = soup.pre.pre.get_text().split('\n')
 
@@ -103,7 +108,6 @@ def parse_land(context):
 
 
 def parse_house(context):
-    land = [''] * 10
     house = [''] * 10
     comment = [''] * 7
     tag = ''
@@ -112,22 +116,17 @@ def parse_house(context):
             tag = 'house_slash'
             continue
 
-        if '--------------' in line:
-            tag = 'land_slash'
-            for i, each in enumerate(line.split('│')):
-                land[i] += each.strip().replace('-', '')
-            continue
-
         # detail
         if tag == 'house_slash':
             for i, each in enumerate(line.split('│')):
                 comment[i] += each.strip()
-        elif tag == 'land_slash':
-            for i, each in enumerate(line.split('│')):
-                house[i] += each.strip()
         else:
             for i, each in enumerate(line.split('│')):
-                land[i] += each.strip()
+                house[i] += each.strip()
+
+    m = re.search('(.*)\-\-\-\-\-\-\-\-\-\-\-\-\-\-(.*)', house[3])
+    land = m.group(1)
+    house[3] = m.group(2)
 
     print(land)
     print(house)
@@ -136,7 +135,8 @@ def parse_house(context):
 
 def parser(addr):
     table = find_table(addr)
-    parse(table)
+    if table:
+        parse(table)
 
 if __name__ == '__main__':
     id = 'tpd/10508/08161831505.007' #character error
@@ -145,5 +145,5 @@ if __name__ == '__main__':
     id = 'tpd/10507/22102612486.033'
 
     addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=/' + id
-
+    addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=%2Fild%2F10505%2F06082332902.002'
     parser(addr)

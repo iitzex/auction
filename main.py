@@ -34,7 +34,7 @@ def traverse(court, proptype, saletype, key):
             href = head + td[4].a['href']
             print(str((page-1)*15+i) + ", " + href)
 
-            # parser(href)
+            parser(href)
             # break
 
         page += 1
@@ -52,7 +52,7 @@ def main():
     #     for p in props:
     #         for s in sales:
     #             traverse(c, p, s)
-    traverse(courts[0], props[0], sales[2], key)
+    traverse(courts[16], props[1], sales[2], key)
 
 
 def get_key():
@@ -65,7 +65,6 @@ def get_key():
     # print(key['value'])
 
     return key['name'] + "=" + key['value']
-
 
 if __name__ == '__main__':
     main()
