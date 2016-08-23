@@ -43,16 +43,19 @@ def traverse(court, proptype, saletype, key):
 def main():
     key = get_key()
 
-    courts = ["TPD", "PCD", "SLD", "TYD", "SCD", "MLD", "TCD", "NTD", "CHD", "ULD",
-              "CYD", "TND", "KSD", "PTD", "TTD", "HLD", "ILD", "KLD", "PHD", "KMD", "LCD"]
+    courts = ["TND", "KSD", "PTD", "TTD", "HLD", "ILD", "KLD", "PHD", "KMD", "LCD"]
+    # courts = ["TPD", "PCD", "SLD", "TYD", "SCD", "MLD", "TCD", "NTD", "CHD", "ULD",
+    #           "CYD", "TND", "KSD", "PTD", "TTD", "HLD", "ILD", "KLD", "PHD", "KMD", "LCD"]
     props = ["C52", "C51"]
     sales = ["1", "4", "5"]
 
-    # for c in courts:
-    #     for p in props:
-    #         for s in sales:
-    #             traverse(c, p, s)
-    traverse(courts[16], props[1], sales[2], key)
+    if 'DEBUG' in globals():
+        traverse(courts[16], props[1], sales[2], key)
+    else:
+        for c in courts:
+            for p in props:
+                for s in sales:
+                    traverse(c, p, s, key)
 
 
 def get_key():

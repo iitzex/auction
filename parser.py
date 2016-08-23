@@ -24,6 +24,7 @@ def find_table(addr):
 
         if tag:
             table.append(line)
+
     return table
 
 
@@ -36,40 +37,49 @@ def parse(table):
         if line == u'┌─────────────────────────────────────────────────┐':
             tag = 'owner_start'
             print(tag)
-        elif line == u'├─┬───────────────────────┬─┬─────┬──────┬────────┤' \
-                or line == u'├─┬──┬───────┬───┬─────────────────┬────┬─────────┤':
+        elif line == u'├─┬─────────────────────┬─┬────┬────┬──────┬──────┤' \
+                or line == u'├─┬──┬───────┬───┬─────────────────┬────┬─────────┤' \
+                or line == u'├─┬───────────────────────┬─┬─────┬──────┬────────┤':
             tag = 'owner_end'
             print(tag)
             parse_owner(owner.split('\n'))
             tag = ''
-        elif line == u'├─┼───┼────┼───┼───┼──────┼─┼─────┼──────┼────────┤':
+        elif line == u'├─┼───┼────┼───┼───┼──────┼─┼─────┼──────┼────────┤' \
+                or line == u'├─┼───┼────┼───┼───┼────┼─┼────┼────┼──────┼──────┤':
             tag = 'land_start'
             print(tag)
-        elif line == u'├─┼───┼────┬───┬───┬──────┬─┬─────┬──────┬────────┤':
+        elif line == u'├─┼───┼────┬───┬───┬──────┬─┬─────┬──────┬────────┤' \
+                or line == u'├─┼───┼────┬───┬───┬────┬─┬────┬────┬──────┬──────┤':
             tag = 'land_split'
             print(tag)
             parse_land(land.split('\n'))
             tag = 'land_start'
             land = ''
-        elif line == u'└─┴───┴───────────────────────────────────────────┘' or \
-                line == u'├─┴──┬┴───────────────────────────────────────────┤':
+        elif line == u'└─┴───┴───────────────────────────────────────────┘' \
+                or line == u'├─┴──┬┴───────────────────────────────────────────┤':
             tag = 'land_end'
             print(tag)
             parse_land(land.split('\n'))
             land = ''
-        elif line == u'├─┼──┼───────┼───┼───────────┼─────┼────┼─────────┤':
+        elif line == u'├─┼──┼───────┼───┼───────────┼─────┼────┼─────────┤' \
+          or line == u'├─┼──┼───────┼───┼───────────┼─────┼──┼─────┼─────┤':
             tag = 'house_start'
             print(tag)
-        elif line == u'├─┼──┼───────┬───┬───────────┬─────┬────┬─────────┤' or \
-                line == u'├─┴──┼────────────────────────────────────────────┤':
+        elif line == u'├─┼──┼───────┬───┬───────────┬─────┬────┬─────────┤' \
+                or line == u'├─┴──┼────────────────────────────────────────────┤' \
+                or line == u'├─┼──┼───────┼───┼───────────┼─────┼──┼─────┼─────┤' \
+                or line == u'├─┼──┼───────┬───┬───────────┬─────┬──┬─────┬─────┤':
             tag = 'house_split'
             print(tag)
+            # print(house)
             parse_house(house.split('\n'))
             tag = 'house_start'
             house = ''
-        elif line == u'└────┴────────────────────────────────────────────┘':
+        elif line == u'└────┴────────────────────────────────────────────┘' \
+                or line == u'└─┴──┴────────────────────────────────────────────┘':
             tag = 'house_end'
             print(tag)
+            house = ''
         else:
             if tag == 'owner_start':
                 owner += line + '\n'
@@ -80,18 +90,19 @@ def parse(table):
 
 
 def parse_owner(context):
-    token = (context[0]).split('：')
-    owner = token[1].split(' ')[0]
+    m = re.search('.*財產所有人：(.*)', context[0])
+    # print(m)
+    owner = m.group(1)
     print(owner)
 
 
 def parse_land(context):
     tag = ''
-    land = [''] * 12
-    comment = [''] * 10
+    land = [''] * 15
+    comment = [''] * 12
     for line in context:
-        if line == u'│  ├───┼────┴───┴───┴──────┴─┴─────┴──────┴────────┤':
-            tag = 'land_slash'
+        if u'──' in line:
+            tag = 'land_dash'
             continue
 
         # detail
@@ -108,16 +119,16 @@ def parse_land(context):
 
 
 def parse_house(context):
-    house = [''] * 10
+    house = [''] * 15
     comment = [''] * 7
     tag = ''
     for line in context:
-        if line == u'│  ├──┼───────┴───┴───────────┴─────┴────┴─────────┤':
-            tag = 'house_slash'
+        if u'──' in line:
+            tag = 'house_dash'
             continue
 
         # detail
-        if tag == 'house_slash':
+        if tag == 'house_dash':
             for i, each in enumerate(line.split('│')):
                 comment[i] += each.strip()
         else:
@@ -135,6 +146,8 @@ def parse_house(context):
 
 def parser(addr):
     table = find_table(addr)
+    # for i in table:
+    #     print(i)
     if table:
         parse(table)
 
@@ -145,5 +158,6 @@ if __name__ == '__main__':
     id = 'tpd/10507/22102612486.033'
 
     addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=/' + id
-    addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=%2Fild%2F10505%2F06082332902.002'
+    addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=%2Ftcd%2F10508%2F03111203609.014'
+    print(addr)
     parser(addr)
