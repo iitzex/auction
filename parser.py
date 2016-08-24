@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 def find_table(addr):
     r = requests.get(addr)
     soup = BeautifulSoup(r.text, "html.parser")
-
     if soup.pre.pre is None:
         print("No Exist")
         return False
@@ -16,10 +15,10 @@ def find_table(addr):
     table = []
     tag = False
     for line in context:
-        if u'~T40X0L2;' in line:
+        if re.match('.*~T.*X.*;', line) and not tag:
             tag = True
             continue
-        elif u'~T64X4L25;' in line:
+        elif re.match('.*~T.*X.*;', line) and tag:
             tag = False
 
         if tag:
@@ -158,6 +157,6 @@ if __name__ == '__main__':
     id = 'tpd/10507/22102612486.033'
 
     addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=/' + id
-    addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=%2Ftcd%2F10508%2F03111203609.014'
+    addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=/ksd/10505/18144353518.016'
     print(addr)
     parser(addr)

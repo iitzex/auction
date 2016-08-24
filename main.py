@@ -43,7 +43,7 @@ def traverse(court, proptype, saletype, key):
 def main():
     key = get_key()
 
-    courts = ["TND", "KSD", "PTD", "TTD", "HLD", "ILD", "KLD", "PHD", "KMD", "LCD"]
+    courts = ["KSD", "PTD", "TTD", "HLD", "ILD", "KLD", "PHD", "KMD", "LCD"]
     # courts = ["TPD", "PCD", "SLD", "TYD", "SCD", "MLD", "TCD", "NTD", "CHD", "ULD",
     #           "CYD", "TND", "KSD", "PTD", "TTD", "HLD", "ILD", "KLD", "PHD", "KMD", "LCD"]
     props = ["C52", "C51"]
