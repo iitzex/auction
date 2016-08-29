@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 import re
 from bs4 import BeautifulSoup
@@ -5,10 +6,13 @@ from bs4 import BeautifulSoup
 
 def find_table(addr):
     r = requests.get(addr)
-    soup = BeautifulSoup(r.text, "html.parser")
-    if soup.pre.pre is None:
+    print(r.encoding)
+    print(r.apparent_encoding)
+    if r.status_code != 200:
         print("No Exist")
         return False
+
+    soup = BeautifulSoup(r.text, "html.parser")
 
     context = soup.pre.pre.get_text().split('\n')
 
@@ -93,6 +97,7 @@ def parse_owner(context):
     # print(m)
     owner = m.group(1)
     print(owner)
+    print(owner.encode())
 
 
 def parse_land(context):
@@ -153,10 +158,8 @@ def parser(addr):
 if __name__ == '__main__':
     id = 'tpd/10508/08161831505.007' #character error
     id = 'tpd/10508/05161016415.020'
-    id = 'tyd/10507/22091642010.010'
-    id = 'tpd/10507/22102612486.033'
+    id = 'tcd%2F10508%2F22100442180.034'
 
     addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=/' + id
-    addr = 'http://aomp.judicial.gov.tw/abbs/wkw/WHD2ASHOW.jsp?rowid=/ksd/10505/18144353518.016'
     print(addr)
     parser(addr)
