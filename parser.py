@@ -6,14 +6,13 @@ from bs4 import BeautifulSoup
 
 def find_table(addr):
     r = requests.get(addr)
-    print(r.encoding)
-    print(r.apparent_encoding)
+    content = r.content.decode('Big5-HKSCS', errors='backslashreplace')
+
     if r.status_code != 200:
-        print("No Exist")
+        print("Not Exist")
         return False
 
-    soup = BeautifulSoup(r.text, "html.parser")
-
+    soup = BeautifulSoup(content, "html.parser")
     context = soup.pre.pre.get_text().split('\n')
 
     table = []
@@ -45,7 +44,7 @@ def parse(table):
                 or line == u'├─┬───────────────────────┬─┬─────┬──────┬────────┤':
             tag = 'owner_end'
             print(tag)
-            parse_owner(owner.split('\n'))
+            owner = parse_owner(owner.split('\n'))
             tag = ''
         elif line == u'├─┼───┼────┼───┼───┼──────┼─┼─────┼──────┼────────┤' \
                 or line == u'├─┼───┼────┼───┼───┼────┼─┼────┼────┼──────┼──────┤':
@@ -55,7 +54,7 @@ def parse(table):
                 or line == u'├─┼───┼────┬───┬───┬────┬─┬────┬────┬──────┬──────┤':
             tag = 'land_split'
             print(tag)
-            parse_land(land.split('\n'))
+            land = parse_land(land.split('\n'))
             tag = 'land_start'
             land = ''
         elif line == u'└─┴───┴───────────────────────────────────────────┘' \
@@ -93,11 +92,11 @@ def parse(table):
 
 
 def parse_owner(context):
-    m = re.search('.*財產所有人：(.*)', context[0])
-    # print(m)
-    owner = m.group(1)
+    m = re.search('.*財產所有人：(.*).*│', context[0])
+    owner = m.group(1).strip()
+
     print(owner)
-    print(owner.encode())
+    return owner
 
 
 def parse_land(context):
@@ -120,6 +119,7 @@ def parse_land(context):
 
     print(land)
     print(comment)
+    return land
 
 
 def parse_house(context):
@@ -146,6 +146,7 @@ def parse_house(context):
     print(land)
     print(house)
     print(comment)
+    return house
 
 
 def parser(addr):
